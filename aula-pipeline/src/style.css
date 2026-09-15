@@ -1,0 +1,9 @@
+:root { font-family: Inter, system-ui, sans-serif; color: #0b1f3a; background: #f5f7fb; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+.container { max-width: 760px; margin: 0 auto; padding: 72px 24px; }
+.tag { display: inline-block; padding: 6px 10px; border-radius: 999px; background: #fff0bf; font-weight: 700; }
+h1 { font-size: clamp(2rem, 6vw, 3.5rem); margin: 18px 0 10px; }
+p { line-height: 1.6; }
+.card { margin-top: 32px; padding: 24px; background: white; border: 1px solid #dce4ef; border-radius: 16px; box-shadow: 0 8px 24px #0b1f3a12; }
+code { background: #eef3f8; padding: 2px 6px; border-radius: 5px; }
