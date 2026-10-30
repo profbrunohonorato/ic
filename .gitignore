@@ -1,0 +1,23 @@
+# Dependências e arquivos gerados em qualquer uma das aulas
+node_modules/
+dist/
+coverage/
+reports/
+.vite/
+
+# Ambiente Python usado pelos scanners
+.venv/
+__pycache__/
+*.pyc
+
+# Configurações locais e segredos (exemplos podem ser versionados)
+.env
+.env.*
+!.env.example
+
+# Logs e arquivos do sistema operacional
+*.log
+.DS_Store
+Thumbs.db
+
+# Manter package-lock.json versionado para instalações com npm ci.

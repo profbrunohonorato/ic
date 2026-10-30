@@ -1,0 +1,23 @@
+# Regras pequenas e locais para tornar a demonstração reproduzível.
+# São barreiras didáticas; não substituem um conjunto amplo de regras.
+rules:
+  - id: evitar-innerhtml
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: Não interprete entradas como HTML. Prefira textContent ou interpolação JSX.
+    pattern-either:
+      - pattern: $ELEMENT.innerHTML = $VALUE
+      - pattern: $ELEMENT.outerHTML = $VALUE
+      - pattern: $ELEMENT.insertAdjacentHTML(...)
+  - id: evitar-html-direto-react
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: Evite dangerouslySetInnerHTML; renderize valores como texto no JSX.
+    pattern: <$TAG ... dangerouslySetInnerHTML={$VALUE} ... />
+  - id: evitar-execucao-dinamica
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: Não execute strings como código; use funções explícitas.
+    pattern-either:
+      - pattern: eval(...)
+      - pattern: new Function(...)

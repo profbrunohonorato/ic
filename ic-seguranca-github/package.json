@@ -1,0 +1,40 @@
+{
+  "name": "catalogo-tecnologias-seguranca-github",
+  "private": true,
+  "version": "1.2.0",
+  "type": "module",
+  "engines": {
+    "node": ">=20.19.0",
+    "npm": ">=11.0.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "coverage": "vitest run --coverage",
+    "security:sast": "semgrep scan --config .semgrep.yml --error --strict src",
+    "security:sca": "npm audit --audit-level=high",
+    "security:secrets": "gitleaks git --config .gitleaks.toml --redact --exit-code 1 .",
+    "security:secrets:dir": "gitleaks dir --config .gitleaks.toml --redact --exit-code 1 .",
+    "sbom": "npm sbom --sbom-format cyclonedx"
+  },
+  "dependencies": {
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.5",
+    "@vitejs/plugin-react": "5.2.0",
+    "@vitest/coverage-v8": "4.1.12",
+    "eslint": "9.39.5",
+    "eslint-plugin-react": "7.37.5",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "eslint-plugin-react-refresh": "0.5.7",
+    "globals": "16.5.0",
+    "vite": "7.3.7",
+    "vitest": "4.1.12"
+  },
+  "packageManager": "npm@11.21.1"
+}

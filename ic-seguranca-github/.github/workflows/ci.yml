@@ -1,0 +1,153 @@
+name: CI - Segurança GitHub
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# O catálogo e seus scanners não precisam escrever no repositório.
+permissions:
+  contents: read
+
+jobs:
+  qualidade:
+    name: github-qualidade
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: Fixar npm validado na aula
+        run: npm install --global npm@11.21.1
+      - run: npm ci
+      - run: npm run lint
+      # Coverage também executa os testes; evita rodar a mesma suíte duas vezes.
+      - run: npm run coverage
+      # SonarQube comentado para manter o foco nos controles desta aula.
+      # Antes de reativar: descomentar sonar-project.properties, configurar secrets
+      # e fixar a action em um SHA verificado.
+      # - name: SonarQube
+      #   uses: SonarSource/sonarqube-scan-action@v7
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      #     SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: cobertura
+          path: coverage/
+          retention-days: 7
+
+  sast:
+    name: github-sast
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install semgrep==1.182.0
+      - name: SAST - bloquear padrões inseguros
+        run: |
+          mkdir -p reports
+          semgrep scan --config .semgrep.yml --error --strict --metrics=off --disable-version-check --json --output reports/semgrep.json src
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: sast
+          path: reports/semgrep.json
+          retention-days: 7
+
+  sca:
+    name: github-sca
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: Fixar npm validado na aula
+        run: npm install --global npm@11.21.1
+      - run: npm ci
+      - name: SCA - bloquear vulnerabilidades altas e críticas
+        run: |
+          mkdir -p reports
+          npm audit --audit-level=high --json > reports/npm-audit.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: dependencias
+          path: reports/npm-audit.json
+          retention-days: 7
+
+  segredos:
+    name: github-segredos
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0 # Gitleaks deve enxergar o histórico, não só o último commit.
+          persist-credentials: false
+      - name: Instalar Gitleaks com versão e checksum fixados
+        run: |
+          curl --fail --silent --show-error --location https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz --output /tmp/gitleaks.tar.gz
+          echo "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb  /tmp/gitleaks.tar.gz" | sha256sum --check
+          tar -xzf /tmp/gitleaks.tar.gz -C /tmp gitleaks
+      - name: Secret scanning - histórico Git
+        run: |
+          mkdir -p reports
+          /tmp/gitleaks git --config .gitleaks.toml --redact --exit-code 1 --report-format json --report-path reports/gitleaks.json .
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: segredos
+          path: reports/gitleaks.json
+          retention-days: 7
+
+  build:
+    name: github-build
+    # Este needs é o Security Gate. Falha ou cancelamento impede o build.
+    needs: [qualidade, sast, sca, segredos]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: Fixar npm validado na aula
+        run: npm install --global npm@11.21.1
+      - run: npm ci
+      - run: npm run build
+      - name: Inventário de componentes (SBOM)
+        run: |
+          mkdir -p reports
+          npm sbom --sbom-format cyclonedx > reports/sbom.cdx.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: catalogo-e-sbom
+          path: |
+            dist/
+            reports/sbom.cdx.json
+          retention-days: 7

@@ -1,0 +1,11 @@
+title = "Segredos no catálogo didático"
+
+# Mantém as regras padrão e acrescenta um marcador artificial para a aula.
+[extend]
+useDefault = true
+
+[[rules]]
+id = "credencial-didatica"
+description = "Marcador artificial sem acesso a qualquer serviço"
+regex = '''AULA_TOKEN_[A-Z0-9]{16}'''
+keywords = ["AULA_TOKEN_"]
