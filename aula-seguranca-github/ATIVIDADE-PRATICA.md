@@ -32,6 +32,8 @@ Desenhe o fluxo GitHub OIDC → OpenBao → serviço. Defina issuer, audience, r
 
 O exercício obrigatório é de arquitetura. Como extensão, um administrador pode preparar um OpenBao isolado, com TLS, auditoria e somente dados artificiais, seguindo o guia. Implemente o cliente do roteiro apenas após essa preparação. Verifique uma leitura permitida e negações para caminho e identidade não autorizados. Não publique JWT, token do vault ou respostas contendo segredos.
 
+Para essa extensão, use o [passo a passo Docker e self-hosted](OPENBAO-DOCKER-SELF-HOSTED.md). Ele fornece o cliente implementado, o template de workflow e as verificações de leitura, negação e revogação; adapte-o somente após configurar a infraestrutura e a confiança OIDC.
+
 Explique por que expirar a sessão do vault não revoga uma senha estática já copiada. Compare KV com secrets engines dinâmicos e descreva rotação, revogação e o que acontece se o job for cancelado.
 
 ## 6. Analisar um incidente

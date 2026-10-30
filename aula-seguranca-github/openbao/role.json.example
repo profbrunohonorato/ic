@@ -1,0 +1,22 @@
+{
+  "role_type": "jwt",
+  "user_claim": "repository_id",
+  "bound_audiences": ["openbao-laboratorio"],
+  "bound_claims_type": "string",
+  "bound_claims": {
+    "repository": "SEU_USUARIO/SEU_REPOSITORIO",
+    "repository_id": "ID_DO_REPOSITORIO",
+    "repository_owner_id": "ID_DO_PROPRIETARIO",
+    "ref": "refs/heads/main",
+    "environment": "laboratorio",
+    "event_name": "workflow_dispatch",
+    "workflow_ref": "SEU_USUARIO/SEU_REPOSITORIO/.github/workflows/openbao-self-hosted.yml@refs/heads/main",
+    "runner_environment": "self-hosted"
+  },
+  "token_policies": ["ci-read-secret"],
+  "token_no_default_policy": true,
+  "token_type": "service",
+  "token_ttl": "5m",
+  "token_max_ttl": "5m",
+  "token_explicit_max_ttl": "5m"
+}

@@ -2,6 +2,8 @@
 
 O objetivo é escolher onde cada configuração deve ficar, controlar quem a utiliza e reduzir a duração das credenciais. O catálogo é uma aplicação de navegador: nenhuma credencial de produção precisa entrar no seu build. O laboratório usa apenas um valor artificial.
 
+Para sair do desenho e executar a integração, consulte [OpenBao via Docker e GitHub Actions self-hosted](OPENBAO-DOCKER-SELF-HOSTED.md), com Compose, configuração do runner, autenticação OIDC e cliente implementado.
+
 ## Escolher o mecanismo
 
 | Informação | Mecanismo | Exemplo |
@@ -79,6 +81,8 @@ Não use apenas `iss` ou uma audiência genérica como condição de confiança:
 ### Esqueleto de job para discussão
 
 Este trecho é um roteiro de integração, não um deploy pronto. Não foi ativado um acesso externo nem provisionado um vault nesta aula.
+
+A implementação executável desse roteiro está em `openbao/consume-secret.py`; o [guia operacional](OPENBAO-DOCKER-SELF-HOSTED.md) explica a infraestrutura e o workflow necessários para usá-la.
 
 ```yaml
 permissions: {}

@@ -4,6 +4,8 @@ Esta versão continua `aula-seguranca`: mantém o catálogo React/Vite, os teste
 
 O comportamento da interface permanece o mesmo; a evolução está na manutenção e no processo de contribuição. Comece pelo [laboratório de Secrets, Variables e OpenBao](SEGREDOS-E-OPENBAO.md) e use o [roteiro de atividades](ATIVIDADE-PRATICA.md) para organizar a aula.
 
+Para executar a integração, siga [OpenBao com Docker e runner self-hosted](OPENBAO-DOCKER-SELF-HOSTED.md). O guia inclui arquivos de infraestrutura, TLS, inicialização, role OIDC e um pipeline manual com cliente Python. O template só é ativado após a preparação do ambiente.
+
 ## Executar
 
 Use Node.js 22 e npm 11.21.1, como na aula anterior:
@@ -27,6 +29,7 @@ Valide com `npm run lint`, `npm run coverage`, `npm run security:sca` e `npm run
 | CI | `.github/workflows/ci.yml` | Qualidade, SAST, SCA e segredos aprovam antes do build e da SBOM |
 | Secrets e Variables | `.github/workflows/laboratorio-secrets.yml` | Laboratório manual com environment e segredo artificial |
 | OpenBao e OIDC | [Guia de segredos](SEGREDOS-E-OPENBAO.md) | Arquitetura, política mínima, expiração e limites do vault |
+| OpenBao em Docker e runner self-hosted | [Passo a passo operacional](OPENBAO-DOCKER-SELF-HOSTED.md) e `openbao/` | Instância persistente e consumo de segredo via OIDC |
 | CodeQL, alertas e push protection | Settings do repositório | Ativação guiada abaixo |
 
 ### Onde colocar os arquivos

@@ -1,0 +1,23 @@
+name: ic-openbao
+services:
+  openbao:
+    image: openbao/openbao:2.7.2
+    command: ["bao", "server", "-config=/openbao/config/server.hcl"]
+    restart: unless-stopped
+    cap_add: [IPC_LOCK]
+    ports:
+      - "${BAO_BIND_IP:-127.0.0.1}:8200:8200"
+    environment:
+      BAO_ADDR: https://127.0.0.1:8200
+      BAO_CACERT: /openbao/tls/ca.crt
+      SKIP_CHOWN: "1"
+    volumes:
+      - ./server.hcl:/openbao/config/server.hcl:ro
+      - bao-data:/openbao/file
+      - bao-audit:/openbao/logs
+      - bao-tls:/openbao/tls
+
+volumes:
+  bao-data:
+  bao-audit:
+  bao-tls:

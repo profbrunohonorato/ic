@@ -1,0 +1,53 @@
+name: OpenBao - Runner self-hosted
+
+on:
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  validar-build:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: ic-seguranca-github
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: ic-seguranca-github/package-lock.json
+      - run: npm install --global npm@11.21.1
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run coverage
+      - run: npm run security:sca
+      - run: npm run build
+
+  consumir-segredo:
+    needs: validar-build
+    if: github.ref == 'refs/heads/main'
+    runs-on: [self-hosted, linux, x64, openbao-lab]
+    environment: laboratorio
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Obter identidade, ler segredo e revogar sessão
+        env:
+          BAO_ADDR: ${{ vars.BAO_ADDR }}
+          BAO_ROLE: ${{ vars.BAO_ROLE }}
+          BAO_AUDIENCE: openbao-laboratorio
+          BAO_CACERT: /etc/openbao/ca.crt
+        run: python3 ic-seguranca-github/openbao/consume-secret.py
