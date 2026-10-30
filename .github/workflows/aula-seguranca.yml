@@ -42,7 +42,7 @@ jobs:
       #   env:
       #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       #     SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: cobertura
@@ -64,7 +64,7 @@ jobs:
         run: |
           mkdir -p reports
           semgrep scan --config .semgrep.yml --error --strict --metrics=off --disable-version-check --json --output reports/semgrep.json src
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: sast
@@ -90,7 +90,7 @@ jobs:
         run: |
           mkdir -p reports
           npm audit --audit-level=high --json > reports/npm-audit.json
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: dependencias
@@ -114,7 +114,7 @@ jobs:
         run: |
           mkdir -p reports
           /tmp/gitleaks git --config .gitleaks.toml --redact --exit-code 1 --report-format json --report-path reports/gitleaks.json .
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: segredos
@@ -143,7 +143,7 @@ jobs:
         run: |
           mkdir -p reports
           npm sbom --sbom-format cyclonedx > reports/sbom.cdx.json
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: catalogo-e-sbom
           path: |
